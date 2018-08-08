@@ -1,23 +1,41 @@
 var socket = io();
 
+
+jQuery("#message-form").on("submit", function (e) {
+  e.preventDefault();
+
+  socket.emit('createMessage', {
+    from: 'USER',
+    text: jQuery('[name=message]').val()
+  }, function () {
+
+  });
+});
+
 socket.on('connect', function() {
   console.log("Connected to server");
-
-  // socket.emit('createMessage', {
-  //   from: "Katie",
-  //   text: "new msg",
-  //   createdAt: "123"
-  // });
-
 });
-
-socket.on('newMessage', function(msg) {
-  console.log("new message: " , msg);
-  document.body.innerHTML += JSON.stringify(msg, undefined, 2);
-  document.body.innerHTML += "<div></div>";
-});
-
 
 socket.on('disconnect', function() {
   console.log("Disconnected to server");
 });
+
+
+socket.on('newMessage', function(message) {
+  console.log("new message: " , message);
+  var li = jQuery('<li></li>');
+  li.text(`${message.from}: ${message.text}`);
+  jQuery('#messages').append(li);
+
+});
+
+
+
+
+socket.emit('createMessage', {
+  from: 'Frank',
+  text: "Hi"
+}, function (data) {
+  console.log(`got: ${data}`);
+});
+
